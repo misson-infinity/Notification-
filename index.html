@@ -7,7 +7,7 @@
 </head>
 <body>
   <h1>Daily Notification System</h1>
-  <p>Click the button to enable notifications for 5:15 AM daily.</p>
+  <p>Click the button to enable notifications for 5:21 AM daily.</p>
   <button id="enable-notifications">Enable Notifications</button>
 
   <script>
@@ -20,7 +20,7 @@
 
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
-          alert("Notifications enabled! You will receive a notification daily at 5:15 AM.");
+          alert("Notifications enabled! You will receive a notification daily at 5:21 AM.");
           scheduleDailyNotification();
         } else {
           alert("Notification permission denied.");
@@ -28,13 +28,13 @@
       });
     }
 
-    // Function to schedule a notification for 5:15 AM daily
+    // Function to schedule a notification for 5:21 AM daily
     function scheduleDailyNotification() {
       const now = new Date();
       const targetTime = new Date();
 
-      // Set notification time to 5:15 AM
-      targetTime.setHours(5, 15, 0, 0); // 5 = 5 AM, 15 = 15 minutes
+      // Set notification time to 5:21 AM
+      targetTime.setHours(5, 21, 0, 0); // 5 = 5 AM, 21 = 21 minutes
 
       // If the target time has passed for today, set it for tomorrow
       if (now > targetTime) {
@@ -54,15 +54,17 @@
 
     // Function to send notification
     function sendNotification() {
-      const notification = new Notification("কাজ শুরু কর চোখ বন্ধ করে", {
-        body: "এখন কাজ শুরু করার সময়।",
-        icon: "https://via.placeholder.com/128", // Replace with your own icon URL
-      });
+      if (Notification.permission === "granted") {
+        const notification = new Notification("কাজ শুরু কর চোখ বন্ধ করে", {
+          body: "এখন কাজ শুরু করার সময়।",
+          icon: "https://via.placeholder.com/128", // Replace with your own icon URL
+        });
 
-      notification.onclick = () => {
-        window.focus(); // Bring the website to focus on notification click
-        console.log("Notification clicked!");
-      };
+        notification.onclick = () => {
+          window.focus(); // Bring the website to focus on notification click
+          console.log("Notification clicked!");
+        };
+      }
     }
 
     // Attach event listener to the button
