@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Notification</title>
+</head>
+<body>
+  <h1>Daily Notification System</h1>
+  <p>Click the button to enable daily notifications.</p>
+  <button id="enable-notifications">Enable Notifications</button>
+
+  <script>
+    // Function to request notification permission
+    function requestNotificationPermission() {
+      if (!("Notification" in window)) {
+        alert("Your browser does not support notifications.");
+        return;
+      }
+
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          alert("Notifications enabled! You will receive a notification daily at the specified time.");
+          scheduleDailyNotification();
+        } else {
+          alert("Notification permission denied.");
+        }
+      });
+    }
+
+    // Function to schedule daily notifications
+    function scheduleDailyNotification() {
+      const now = new Date();
+      const targetTime = new Date();
+
+      // Set notification time to 9:00 AM
+      targetTime.setHours(9, 0, 0, 0);
+
+      // If the target time has passed for today, set it for tomorrow
+      if (now > targetTime) {
+        targetTime.setDate(targetTime.getDate() + 1);
+      }
+
+      // Calculate time remaining until the target time
+      const timeUntilNotification = targetTime - now;
+
+      // Set timeout for the first notification
+      setTimeout(() => {
+        sendNotification();
+        // Schedule the notification to repeat daily
+        setInterval(sendNotification, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
+      }, timeUntilNotification);
+    }
+
+    // Function to send notification
+    function sendNotification() {
+      const notification = new Notification("Bangladesh Victory Day of the", {
+        body: "Let's celebrate victory every day with pride!",
+        icon: "https://via.placeholder.com/128", // Replace with your own icon URL
+      });
+
+      notification.onclick = () => {
+        window.focus(); // Bring the website to focus on notification click
+        console.log("Notification clicked!");
+      };
+    }
+
+    // Attach event listener to the button
+    document.getElementById("enable-notifications").addEventListener("click", requestNotificationPermission);
+  </script>
+</body>
+</html>
