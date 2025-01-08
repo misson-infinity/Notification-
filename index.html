@@ -3,12 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Push Notification</title>
+    <title>Web Push Notification</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging.js"></script>
 </head>
 <body>
-    <h1>Push Notification Test</h1>
-    <button id="enable-notifications">Enable Notifications</button>
 
-    <script src="app.js"></script>
+    <h1>FCM Push Notification</h1>
+    <div id="token"></div>
+
+    <script>
+        // Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqGnK_eHxHW3Av4ddQrBNInESp8hQei2M",
+            authDomain: "push-notification-7a4f0.firebaseapp.com",
+            projectId: "push-notification-7a4f0",
+            storageBucket: "push-notification-7a4f0.appspot.com",
+            messagingSenderId: "385686618021",
+            appId: "1:385686618021:web:6f664c5b5eceb384ba324c"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        // পুশ নোটিফিকেশন আলাউ করা
+        Notification.requestPermission().then((permission) => {
+            if (permission === "granted") {
+                messaging.getToken().then((currentToken) => {
+                    if (currentToken) {
+                        // টোকেন ওয়েব পেজে দেখানো
+                        document.getElementById('token').textContent = `FCM Token: ${currentToken}`;
+                    } else {
+                        console.log('No Instance ID token available. Request permission to generate one.');
+                    }
+                }).catch((err) => {
+                    console.log('An error occurred while retrieving token. ', err);
+                });
+            }
+        });
+
+        // WebView থেকে token সেট করার জন্য ফাংশন
+        function setFCMToken(token) {
+            console.log("Received FCM Token: ", token);
+            // এখানে আপনি টোকেনটি ব্যবহার করতে পারেন
+        }
+    </script>
+
 </body>
 </html>
