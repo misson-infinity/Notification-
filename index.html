@@ -3,52 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Push Notification</title>
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging.js"></script>
+    <title>স্বৈরাচারীকে জুতা মারো</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #d32f2f;
+        }
+
+        canvas {
+            background-color: white;
+            border: 2px solid black;
+        }
+    </style>
 </head>
 <body>
-
-    <h1>FCM Push Notification</h1>
-    <div id="token"></div>
+    <h1>স্বৈরাচারীকে জুতা মারো!</h1>
+    <p>স্কোর: <span id="score">0</span></p>
+    <canvas id="gameCanvas"></canvas>
+    <audio id="hitSound" src="hit.mp3"></audio> <!-- **"ঠাস!" শব্দ** -->
 
     <script>
-        // Your Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAqGnK_eHxHW3Av4ddQrBNInESp8hQei2M",
-            authDomain: "push-notification-7a4f0.firebaseapp.com",
-            projectId: "push-notification-7a4f0",
-            storageBucket: "push-notification-7a4f0.appspot.com",
-            messagingSenderId: "385686618021",
-            appId: "1:385686618021:web:6f664c5b5eceb384ba324c"
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = 800;
+        canvas.height = 500;
+
+        let score = 0;
+        const hitSound = document.getElementById("hitSound"); // **"ঠাস!" শব্দ**
+
+        // স্বৈরাচারীর মাথার অবস্থা
+        const dictator = {
+            x: Math.random() * (canvas.width - 100),
+            y: Math.random() * (canvas.height - 100),
+            width: 80,
+            height: 80,
+            image: new Image(),
         };
+        dictator.image.src = "dictator.png"; // **স্বৈরাচারীর ছবি (তুমি অ্যাড করবা)**
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const messaging = firebase.messaging();
+        // জুতার অবস্থা
+        const shoe = {
+            x: 100,
+            y: 400,
+            width: 50,
+            height: 50,
+            image: new Image(),
+            dragging: false,
+        };
+        shoe.image.src = "shoe.png"; // **জুতার ছবি (তুমি অ্যাড করবা)**
 
-        // পুশ নোটিফিকেশন আলাউ করা
-        Notification.requestPermission().then((permission) => {
-            if (permission === "granted") {
-                messaging.getToken().then((currentToken) => {
-                    if (currentToken) {
-                        // টোকেন ওয়েব পেজে দেখানো
-                        document.getElementById('token').textContent = `FCM Token: ${currentToken}`;
-                    } else {
-                        console.log('No Instance ID token available. Request permission to generate one.');
-                    }
-                }).catch((err) => {
-                    console.log('An error occurred while retrieving token. ', err);
-                });
+        canvas.addEventListener("mousedown", (event) => {
+            const mouseX = event.clientX - canvas.offsetLeft;
+            const mouseY = event.clientY - canvas.offsetTop;
+
+            if (
+                mouseX >= shoe.x &&
+                mouseX <= shoe.x + shoe.width &&
+                mouseY >= shoe.y &&
+                mouseY <= shoe.y + shoe.height
+            ) {
+                shoe.dragging = true;
             }
         });
 
-        // WebView থেকে token সেট করার জন্য ফাংশন
-        function setFCMToken(token) {
-            console.log("Received FCM Token: ", token);
-            // এখানে আপনি টোকেনটি ব্যবহার করতে পারেন
-        }
-    </script>
+        canvas.addEventListener("mousemove", (event) => {
+            if (shoe.dragging) {
+                shoe.x = event.clientX - canvas.offsetLeft - shoe.width / 2;
+                shoe.y = event.clientY - canvas.offsetTop - shoe.height / 2;
+            }
+        });
 
+        canvas.addEventListener("mouseup", () => {
+            if (
+                shoe.x < dictator.x + dictator.width &&
+                shoe.x + shoe.width > dictator.x &&
+                shoe.y < dictator.y + dictator.height &&
+                shoe.y + shoe.height > dictator.y
+            ) {
+                score++;
+                document.getElementById("score").innerText = score;
+                hitSound.play(); // **"ঠাস!" শব্দ বাজবে** 
+                moveDictator();
+            }
+
+            shoe.x = 100; // জুতাকে আবার নিচে ফিরিয়ে আনবে
+            shoe.y = 400;
+            shoe.dragging = false;
+        });
+
+        function moveDictator() {
+            dictator.x = Math.random() * (canvas.width - dictator.width);
+            dictator.y = Math.random() * (canvas.height - dictator.height);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(dictator.image, dictator.x, dictator.y, dictator.width, dictator.height);
+            ctx.drawImage(shoe.image, shoe.x, shoe.y, shoe.width, shoe.height);
+        }
+
+        function gameLoop() {
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
 </body>
 </html>
