@@ -5,17 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>স্বৈরাচারীকে জুতা মারো</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             text-align: center;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background: #2c3e50;
+            color: white;
         }
         h1 {
-            color: #d32f2f;
+            margin-top: 20px;
+            font-size: 30px;
+            color: #f1c40f;
+        }
+        p {
+            font-size: 20px;
+            margin: 10px 0;
         }
         canvas {
-            background-color: white;
-            border: 2px solid black;
+            display: block;
+            background: url('background.jpg') no-repeat center center/cover;
+            margin: 20px auto;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
@@ -23,7 +38,7 @@
     <h1>স্বৈরাচারীকে জুতা মারো!</h1>
     <p>স্কোর: <span id="score">0</span></p>
     <canvas id="gameCanvas"></canvas>
-    <audio id="hitSound" src="hit.mp3"></audio> <!-- **ঠাস! শব্দ** -->
+    <audio id="hitSound" src="hit.mp3"></audio>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
@@ -34,19 +49,17 @@
         let score = 0;
         const hitSound = document.getElementById("hitSound");
 
-        // **স্বৈরাচারীর মাথা (Picsart_25-02-12_18-21-46-138.png)**
         const dictator = {
             x: Math.random() * (canvas.width - 100),
             y: Math.random() * (canvas.height - 100),
-            width: 80,
-            height: 80,
-            dx: 2,
+            width: 100,
+            height: 100,
+            dx: 3,
             dy: 2,
             image: new Image(),
         };
-        dictator.image.src = "Picsart_25-02-12_18-21-46-138.png"; // **স্বৈরাচারীর নতুন ছবি**
+        dictator.image.src = "Picsart_25-02-12_18-21-46-138.png"; 
 
-        // **জুতা (Picsart_25-02-12_18-22-15-576.png)**
         const shoe = {
             x: 100,
             y: 400,
@@ -56,11 +69,11 @@
             moving: false,
             targetX: 0,
             targetY: 0,
-            speed: 5,
+            speed: 7,
         };
-        shoe.image.src = "Picsart_25-02-12_18-22-15-576.png"; // **জুতার নতুন ছবি**
+        shoe.image.src = "Picsart_25-02-12_18-22-15-576.png"; 
 
-        canvas.addEventListener("click", () => {
+        canvas.addEventListener("click", (event) => {
             if (!shoe.moving) {
                 shoe.moving = true;
                 shoe.targetX = dictator.x + dictator.width / 2 - shoe.width / 2;
@@ -108,9 +121,26 @@
                 score++;
                 document.getElementById("score").innerText = score;
                 hitSound.play();
+                shakeDictator();
             }
             shoe.x = 100;
             shoe.y = 400;
+        }
+
+        function shakeDictator() {
+            let originalX = dictator.x;
+            let originalY = dictator.y;
+            let count = 0;
+            let interval = setInterval(() => {
+                dictator.x = originalX + (Math.random() * 10 - 5);
+                dictator.y = originalY + (Math.random() * 10 - 5);
+                count++;
+                if (count > 5) {
+                    clearInterval(interval);
+                    dictator.x = originalX;
+                    dictator.y = originalY;
+                }
+            }, 50);
         }
 
         function draw() {
