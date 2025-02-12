@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>স্বৈরাচারীকে জুতা মারো</title>
+    <title>স্বৈরাচারীকে জুতা মারো!</title>
     <style>
         * {
             margin: 0;
@@ -13,17 +13,22 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
-            background: #2c3e50;
+            background: #1e272e;
             color: white;
         }
         h1 {
             margin-top: 20px;
-            font-size: 30px;
+            font-size: 28px;
             color: #f1c40f;
         }
         p {
             font-size: 20px;
             margin: 10px 0;
+        }
+        .info {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #ff4757;
         }
         canvas {
             display: block;
@@ -32,13 +37,27 @@
             border: 3px solid white;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
+        #restart {
+            padding: 10px 20px;
+            font-size: 18px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h1>স্বৈরাচারীকে জুতা মারো!</h1>
     <p>স্কোর: <span id="score">0</span></p>
+    <p class="info">সময় বাকি: <span id="timer">30</span> সেকেন্ড</p>
     <canvas id="gameCanvas"></canvas>
-    <audio id="hitSound" src="hit.mp3"></audio>
+    <button id="restart">আবার খেলো</button>
+
+    <audio id="hitSound" src="hit.mp3"></audio> <!-- জুতা লাগলে শব্দ -->
+    <audio id="missSound" src="miss.mp3"></audio> <!-- মিস করলে শব্দ -->
 
     <script>
         const canvas = document.getElementById("gameCanvas");
@@ -47,7 +66,11 @@
         canvas.height = 500;
 
         let score = 0;
+        let timeLeft = 30;
+        let gameRunning = true;
+        
         const hitSound = document.getElementById("hitSound");
+        const missSound = document.getElementById("missSound");
 
         const dictator = {
             x: Math.random() * (canvas.width - 100),
@@ -74,7 +97,7 @@
         shoe.image.src = "Picsart_25-02-12_18-22-15-576.png"; 
 
         canvas.addEventListener("click", (event) => {
-            if (!shoe.moving) {
+            if (!shoe.moving && gameRunning) {
                 shoe.moving = true;
                 shoe.targetX = dictator.x + dictator.width / 2 - shoe.width / 2;
                 shoe.targetY = dictator.y + dictator.height / 2 - shoe.height / 2;
@@ -122,6 +145,13 @@
                 document.getElementById("score").innerText = score;
                 hitSound.play();
                 shakeDictator();
+
+                if (score % 10 === 0) {
+                    dictator.dx += 1;
+                    dictator.dy += 1;
+                }
+            } else {
+                missSound.play();
             }
             shoe.x = 100;
             shoe.y = 400;
@@ -143,6 +173,33 @@
             }, 50);
         }
 
+        function startTimer() {
+            let timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById("timer").innerText = timeLeft;
+                } else {
+                    clearInterval(timer);
+                    gameRunning = false;
+                    document.getElementById("restart").style.display = "block";
+                }
+            }, 1000);
+        }
+
+        function restartGame() {
+            score = 0;
+            timeLeft = 30;
+            gameRunning = true;
+            dictator.dx = 3;
+            dictator.dy = 2;
+            document.getElementById("score").innerText = score;
+            document.getElementById("timer").innerText = timeLeft;
+            document.getElementById("restart").style.display = "none";
+            startTimer();
+        }
+
+        document.getElementById("restart").addEventListener("click", restartGame);
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(dictator.image, dictator.x, dictator.y, dictator.width, dictator.height);
@@ -150,12 +207,15 @@
         }
 
         function gameLoop() {
-            moveDictator();
-            moveShoe();
-            draw();
-            requestAnimationFrame(gameLoop);
+            if (gameRunning) {
+                moveDictator();
+                moveShoe();
+                draw();
+                requestAnimationFrame(gameLoop);
+            }
         }
 
+        startTimer();
         gameLoop();
     </script>
 </body>
