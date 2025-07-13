@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusConnect</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
+        .hidden { display: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #555; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-content { animation: fadeIn 0.3s ease-out; }
+        .whitespace-pre-wrap { white-space: pre-wrap; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Main Application Container -->
+    <div id="app-container">
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="fixed inset-0 bg-white flex flex-col justify-center items-center z-50">
+            <div class="text-3xl font-bold text-indigo-600">CampusConnect</div>
+            <div class="mt-4"><i class="fas fa-spinner fa-spin text-4xl text-indigo-500"></i></div>
+            <p class="mt-2 text-gray-600">Loading...</p>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="login-screen" class="hidden min-h-screen flex items-center justify-center bg-gray-100">
+            <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
+                <h1 class="text-3xl font-bold text-center text-indigo-600">Welcome to CampusConnect</h1>
+                <p class="text-center text-gray-500">Connect with your campus community.</p>
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label for="login-email" class="text-sm font-medium text-gray-700">Email address</label>
+                        <input id="login-email" type="email" required class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="login-password" class="text-sm font-medium text-gray-700">Password</label>
+                        <input id="login-password" type="password" required class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <button id="login-button" type="submit" class="w-full flex justify-center items-center py-3 px-4 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-semibold disabled:bg-indigo-400">
+                        <span class="btn-text">Log In</span>
+                        <i class="fas fa-spinner fa-spin btn-loader hidden ml-2"></i>
+                    </button>
+                </form>
+                <div id="login-error" class="text-red-500 text-sm text-center"></div>
+                <p class="text-sm text-center text-gray-600">
+                    Don't have an account? <a href="#" id="show-signup" class="font-medium text-indigo-600 hover:underline">Sign up</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Signup Screen -->
+        <div id="signup-screen" class="hidden min-h-screen flex items-center justify-center bg-gray-100 py-12">
+            <div class="w-full max-w-lg p-8 space-y-6 bg-white rounded-xl shadow-lg">
+                <h1 class="text-3xl font-bold text-center text-indigo-600">Create Your Account</h1>
+                <form id="signup-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Full Name</label>
+                            <input id="signup-name" type="text" required class="w-full px-4 py-2 mt-1 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">College Roll Number / ID</label>
+                            <input id="signup-roll" type="text" required class="w-full px-4 py-2 mt-1 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Department</label>
+                            <input id="signup-department" type="text" required class="w-full px-4 py-2 mt-1 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Class / Year</label>
+                            <input id="signup-class" type="text" required class="w-full px-4 py-2 mt-1 border rounded-lg">
+                        </div>
+                         <div>
+                            <label class="text-sm font-medium text-gray-700">Gender</label>
+                            <select id="signup-gender" required class="w-full px-4 py-2 mt-1 border rounded-lg bg-white">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Religion</label>
+                            <input id="signup-religion" type="text" class="w-full px-4 py-2 mt-1 border rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Email Address</label>
+                        <input id="signup-email" type="email" required class="w-full px-4 py-2 mt-1 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Password (min. 6 characters)</label>
+                        <input id="signup-password" type="password" required class="w-full px-4 py-2 mt-1 border rounded-lg">
+                    </div>
+                    <button id="signup-button" type="submit" class="w-full flex justify-center items-center py-3 px-4 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 font-semibold disabled:bg-indigo-400">
+                        <span class="btn-text">Sign Up</span>
+                        <i class="fas fa-spinner fa-spin btn-loader hidden ml-2"></i>
+                    </button>
+                </form>
+                <div id="signup-error" class="text-red-500 text-sm text-center"></div>
+                <p class="text-sm text-center text-gray-600">
+                    Already have an account? <a href="#" id="show-login" class="font-medium text-indigo-600 hover:underline">Log in</a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Pending Approval Screen -->
+        <div id="pending-approval-screen" class="hidden min-h-screen flex items-center justify-center bg-gray-100">
+            <div class="w-full max-w-md p-8 text-center bg-white rounded-xl shadow-lg">
+                <i class="fas fa-hourglass-half text-5xl text-amber-500 mx-auto"></i>
+                <h1 class="text-2xl font-bold text-gray-800 mt-4">Application Submitted!</h1>
+                <p class="text-gray-600 mt-2">Your account is pending approval from an administrator. You will be notified once your account is approved. Please check back later.</p>
+                <button id="logout-pending" class="mt-6 w-full py-2 px-4 text-white bg-red-500 rounded-lg hover:bg-red-600 font-semibold">Log Out</button>
+            </div>
+        </div>
+
+        <!-- Main Application UI -->
+        <div id="main-app" class="hidden">
+            <!-- Header -->
+            <header class="bg-white shadow-md sticky top-0 z-40">
+                <div class="container mx-auto px-4">
+                    <div class="flex justify-between items-center py-3">
+                        <div class="text-2xl font-bold text-indigo-600">
+                            <a href="#" class="nav-link" data-page="feed">CampusConnect</a>
+                        </div>
+                        <div class="flex items-center space-x-6">
+                            <a href="#" class="nav-link text-gray-600 hover:text-indigo-600" data-page="feed"><i class="fas fa-home text-xl"></i></a>
+                            <a href="#" class="nav-link text-gray-600 hover:text-indigo-600" data-page="messenger"><i class="fas fa-comments text-xl"></i></a>
+                            <a href="#" class="nav-link text-gray-600 hover:text-indigo-600" data-page="notice-board"><i class="fas fa-bullhorn text-xl"></i></a>
+                            <a href="#" id="admin-panel-button" class="hidden nav-link text-gray-600 hover:text-indigo-600" data-page="admin-panel"><i class="fas fa-user-shield text-xl"></i></a>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div id="current-user-profile" class="flex items-center space-x-2 cursor-pointer">
+                                <img id="header-user-img" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" class="w-8 h-8 rounded-full object-cover">
+                                <span id="header-user-name" class="font-semibold text-gray-700 text-sm">User</span>
+                            </div>
+                            <button id="logout-main" class="text-gray-500 hover:text-red-600"><i class="fas fa-sign-out-alt text-xl"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="container mx-auto p-4 grid grid-cols-12 gap-6">
+                
+                <!-- Left Sidebar (Profile Info) -->
+                <aside class="col-span-12 md:col-span-3">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                         <div class="text-center">
+                            <img id="sidebar-user-img" src="https://placehold.co/100x100/E2E8F0/4A5568?text=U" class="w-24 h-24 rounded-full object-cover mx-auto border-4 border-indigo-200">
+                            <h2 id="sidebar-user-name" class="text-xl font-bold mt-2">User Name</h2>
+                            <p id="sidebar-user-dept" class="text-sm text-gray-500">Department</p>
+                        </div>
+                        <hr class="my-4">
+                        <div>
+                            <h3 class="font-semibold text-gray-700">Profile Details</h3>
+                            <ul class="mt-2 space-y-2 text-sm text-gray-600">
+                                <li><i class="fas fa-id-card w-5"></i> Roll: <span id="sidebar-user-roll"></span></li>
+                                <li><i class="fas fa-chalkboard-teacher w-5"></i> Class: <span id="sidebar-user-class"></span></li>
+                                <li><i class="fas fa-venus-mars w-5"></i> Gender: <span id="sidebar-user-gender"></span></li>
+                                <li><i class="fas fa-praying-hands w-5"></i> Religion: <span id="sidebar-user-religion"></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Center Content (Dynamic) -->
+                <div id="page-content" class="col-span-12 md:col-span-6">
+                    
+                    <!-- Feed Page -->
+                    <div id="feed-page" class="page">
+                        <!-- Create Post -->
+                        <div class="bg-white p-4 rounded-lg shadow mb-6">
+                            <form id="create-post-form">
+                                <textarea id="post-content" class="w-full p-2 border rounded-lg" placeholder="What's on your mind?"></textarea>
+                                <div class="flex justify-between items-center mt-2">
+                                    <div>
+                                        <label for="post-image" class="cursor-pointer text-indigo-600 hover:text-indigo-800">
+                                            <i class="fas fa-image"></i> Add Image
+                                        </label>
+                                        <input type="file" id="post-image" class="hidden" accept="image/*">
+                                        <span id="image-name" class="text-sm text-gray-500 ml-2"></span>
+                                    </div>
+                                    <button id="post-submit-button" type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700 disabled:bg-indigo-400 flex items-center">
+                                        <span class="btn-text">Post</span>
+                                        <i class="fas fa-spinner fa-spin btn-loader hidden ml-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Posts Feed -->
+                        <div id="posts-feed-container" class="space-y-6">
+                            <!-- Posts will be dynamically inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Messenger Page -->
+                    <div id="messenger-page" class="page hidden">
+                        <div class="bg-white rounded-lg shadow h-[75vh] flex">
+                            <!-- User List -->
+                            <div class="w-1/3 border-r custom-scrollbar overflow-y-auto">
+                                <div class="p-4 border-b">
+                                    <h2 class="text-xl font-bold">Chats</h2>
+                                    <input id="user-search-input" type="text" placeholder="Search for users..." class="w-full mt-2 p-2 border rounded-lg text-sm">
+                                </div>
+                                <div id="user-search-results" class="hidden bg-white border-b"></div>
+                                <div id="chat-list-container">
+                                    <!-- Chat list items will be here -->
+                                </div>
+                            </div>
+                            <!-- Chat Window -->
+                            <div id="chat-window" class="w-2/3 flex flex-col">
+                                <div id="chat-placeholder" class="flex-grow flex items-center justify-center text-gray-500">
+                                    Select a chat to start messaging
+                                </div>
+                                <div id="chat-area" class="hidden flex-grow flex flex-col">
+                                    <div class="p-4 border-b flex items-center space-x-3">
+                                        <img id="chat-with-img" src="https://placehold.co/40x40" class="w-10 h-10 rounded-full object-cover">
+                                        <h3 id="chat-with-name" class="font-bold"></h3>
+                                    </div>
+                                    <div id="messages-container" class="flex-grow p-4 overflow-y-auto custom-scrollbar space-y-4">
+                                        <!-- Messages will be here -->
+                                    </div>
+                                    <div class="p-4 border-t">
+                                        <form id="send-message-form" class="flex space-x-3">
+                                            <input id="message-input" type="text" placeholder="Type a message..." class="flex-grow p-2 border rounded-lg" autocomplete="off">
+                                            <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg"><i class="fas fa-paper-plane"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notice Board Page -->
+                    <div id="notice-board-page" class="page hidden">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h2 class="text-2xl font-bold text-indigo-700 border-b pb-2 mb-4">College Notice Board</h2>
+                            <div id="notice-board-container" class="space-y-4">
+                                <!-- Notices will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Panel Page -->
+                    <div id="admin-panel-page" class="page hidden">
+                         <div class="bg-white p-4 rounded-lg shadow mb-6">
+                            <h2 class="text-2xl font-bold text-red-700 border-b pb-2 mb-4">Admin Panel</h2>
+                            <h3 class="text-lg font-semibold mb-2">Pending User Approvals</h3>
+                            <div id="pending-users-container" class="space-y-4">
+                                <!-- Pending users will be here -->
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold mb-2">Create a New Notice</h3>
+                            <form id="create-notice-form">
+                                <input id="notice-title" type="text" placeholder="Notice Title" required class="w-full p-2 border rounded-lg mb-2">
+                                <textarea id="notice-content" placeholder="Notice Details..." required class="w-full p-2 border rounded-lg mb-2" rows="4"></textarea>
+                                <button id="notice-submit-button" type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-blue-400 flex justify-center items-center">
+                                    <span class="btn-text">Post Notice</span>
+                                    <i class="fas fa-spinner fa-spin btn-loader hidden ml-2"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Sidebar (Placeholder) -->
+                <aside class="hidden md:block md:col-span-3">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-700">Suggestions</h3>
+                        <p class="text-sm text-gray-500 mt-2">Feature coming soon!</p>
+                    </div>
+                </aside>
+
+            </main>
+        </div>
+        
+        <!-- Generic Modal -->
+        <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="modal-content bg-white p-6 rounded-lg shadow-xl max-w-sm text-center">
+                <p id="modal-message"></p>
+                <button id="modal-close" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg">Close</button>
+            
